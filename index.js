@@ -42,8 +42,11 @@ function init(PORT, CALLBACK) {
 				userData.userName = msg;
 				userDatas[userData.userName] = userData;
 				users[userData.userName] = ws;
-				CALLBACK(ws, userData, ["join"]);
+				let res = await CALLBACK(ws, userData, ["join"]);
 				ws.send("OK");
+				if (res) {
+					ws.send(res);
+				}
 			} else {
 				// Name is busy
 				ws.send("ERR");
