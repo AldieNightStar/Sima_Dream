@@ -19,48 +19,50 @@ function init(PORT, CALLBACK) {
 	  // req - Simple Express Request
 	  // ws  - Client connection
 	  let userData = {};
-	 
+
 	  ws.on('message', async function(msg) {
-	    if (!userData.userName) {
-	    	// Do not allow short/long names or names with strange symbols
-	    	if (msg.length < 3 || msg.length > 20
-	    		|| msg.indexOf("<") > -1
-	    		|| msg.indexOf(">") > -1
-	    		|| msg.indexOf("&") > -1
-	    		|| msg.indexOf("$") > -1
-	    		|| msg.indexOf("/") > -1
-	    		|| msg.indexOf("\\")> -1
-	    		|| msg.indexOf(";") > -1
-	    	) {
-	    		ws.send("ERR");
-	    		return;
-	    	}
-	    	// Do not allow to repeat the names
-	    	// Send 'ERR' if already busy
-	    	if (users[msg] === undefined) {
-	    		// Name is free
-	    		userData.userName = msg;
-	    		userDatas[userData.userName] = userData;
-	    		users[userData.userName] = ws;
-	    		CALLBACK(ws, userData, ["join"]);
-	    		ws.send("OK");
-	    	} else {
-	    		// Name is busy
-	    		ws.send("ERR");
-	    	}
-	    	return;
-	    }
-	    let cmdArg = parse(msg);
-	    let res = await CALLBACK(ws, userData, cmdArg);
-	    if (res) {
-	    	ws.send(res);
-	    }
+		if (!userData.userName) {
+			// Do not allow short/long names or names with strange symbols
+			if (msg.length < 3 || msg.length > 20
+				|| msg.indexOf("<") > -1
+				|| msg.indexOf(">") > -1
+				|| msg.indexOf("&") > -1
+				|| msg.indexOf("$") > -1
+				|| msg.indexOf("/") > -1
+				|| msg.indexOf("\\")> -1
+				|| msg.indexOf(";") > -1
+			) {
+				ws.send("ERR");
+				return;
+			}
+			// Do not allow to repeat the names
+			// Send 'ERR' if already busy
+			if (users[msg] === undefined) {
+				// Name is free
+				userData.userName = msg;
+				userDatas[userData.userName] = userData;
+				users[userData.userName] = ws;
+				CALLBACK(ws, userData, ["join"]);
+				ws.send("OK");
+			} else {
+				// Name is busy
+				ws.send("ERR");
+			}
+			return;
+		}
+		let cmdArg = parse(msg);
+		let res = await CALLBACK(ws, userData, cmdArg);
+		if (res) {
+			ws.send(res);
+		}
 	  });
 	 
 	  ws.on('close', function() {
-	  	delete users[userName];
+	  	delete users[userData.userName];
+	  	delete userDatas[userData.userName];
+	  	delete userData;
 	  });
-	 
+
 	  // On Connected
 	  // Nothing to do
 	 
@@ -73,12 +75,3 @@ function init(PORT, CALLBACK) {
 };
 
 module.exports = { init }
-
-// TODO: remove it
-// Just for test
-let d = init(8080, (ws, data, spl) => {
-	return "ECHO: " + data.userName + " ==> "
-		+ spl.join(" ")
-		+ "<br> USERS: "
-		+ JSON.stringify(Object.keys(d.users));
-})
