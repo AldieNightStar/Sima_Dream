@@ -6,6 +6,7 @@ function parse(message) {
 		return [message]
 	}
 	let spl = splitWithTail(message, " ", 1);
+	return spl;
 }
 
 function splitWithTail(str,delim,count){
