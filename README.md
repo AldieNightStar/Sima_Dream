@@ -14,7 +14,7 @@ const sima = require("sima_dream");
 const PORT = 8000;
 
 // Then we will connect our logic to the game
-// We don't need to wory about connecting and disconnecting players
+// We don't need to worry about connecting and disconnecting players
 let S = sima.init(PORT, function(ws, userData, cmdArg) {
 	// ws       - User websocket. You can directly send some message to the user by 'ws.send("Hello!");'
 	// userData - Object which contains current user data. We can put there coins, score, etc
