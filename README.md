@@ -35,7 +35,7 @@ S.userDatas // Object with user names as key and their userData as value
 ```js
 const sima = require("sima_dream");
 
-let S = init(8080, (ws, data, cmdArg) => {
+let S = sima.init(8080, (ws, data, cmdArg) => {
 	return "ECHO: " + data.userName + " ==> " + cmdArg.join(" ");
 })
 ```
